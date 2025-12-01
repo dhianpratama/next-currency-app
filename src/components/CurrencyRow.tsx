@@ -7,6 +7,7 @@ interface Props {
   rate: number;
   baseCurrency: string;
   baseAmount: number;
+  isLoading: boolean;
   onClick: () => void;
 }
 
@@ -15,6 +16,7 @@ export default function CurrencyRow({
   rate,
   baseCurrency,
   baseAmount,
+  isLoading,
   onClick,
 }: Props) {
   const converted = baseAmount * rate;
@@ -40,7 +42,7 @@ export default function CurrencyRow({
         </span>
       </div>
 
-      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+      <p className="animate-pulse text-sm text-gray-500 dark:text-gray-400 mt-1">
         1 {baseCurrency} = {rate.toFixed(4)} {currency}
       </p>
     </div>

@@ -6,6 +6,7 @@ interface Props {
   rates: Record<string, number>;
   baseCurrency: string;
   baseAmount: number;
+  isLoading: boolean;
   onSelectCurrency: (currency: string) => void;
 }
 
@@ -13,6 +14,7 @@ export default function CurrencyList({
   rates,
   baseAmount,
   baseCurrency,
+  isLoading,
   onSelectCurrency,
 }: Props) {
   return (
@@ -24,6 +26,7 @@ export default function CurrencyList({
           rate={rate}
           baseCurrency={baseCurrency}
           baseAmount={baseAmount}
+          isLoading={isLoading}
           onClick={() => onSelectCurrency(currency)}
         />
       ))}

@@ -10,33 +10,47 @@ import {
   Tooltip,
 } from "recharts";
 import { useState, useMemo } from "react";
+import config from "@/lib/config";
+import { useQuery } from "@tanstack/react-query";
+import { HistoricalRate } from "@/lib/exchangeProviders/types";
 
 interface Props {
-  data: { date: string; rate: number }[];
-  symbol: string;
+  currency: string;
+  base: string;
 }
 
 const ranges = [
   { label: "7D", days: 7 },
   { label: "14D", days: 14 },
   { label: "1M", days: 30 },
-  { label: "6M", days: 180 },
-  { label: "1Y", days: 365 },
 ];
 
-export default function HistoricalChart({ data, symbol }: Props) {
-  const [range, setRange] = useState("14D");
+export default function HistoricalChart({ currency, base }: Props) {
+  const [range, setRange] = useState(config.defaultChartPeriod);
 
-  const filteredData = useMemo(() => {
-    const days = ranges.find((r) => r.label === range)?.days as number;
-    return data.slice(-days);
-  }, [range, data]);
+  const days = useMemo(() => {
+    return ranges.find((r) => r.label === range)?.days as number;
+  }, [range]);
 
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["historical", currency, base, days],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/historical?base=${base}&currency=${currency}`
+      );
+      return res.json() as Promise<HistoricalRate[]>;
+    },
+    placeholderData: (previousData) => previousData,
+    refetchInterval: 60000,
+    refetchOnWindowFocus: true,
+  });
+
+  console.log("data ", data);
   return (
     <div className="w-full pt-2">
       {/* Title */}
       <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
-        {symbol} exchange rate
+        {currency} exchange rate
       </h2>
 
       {/* Time Range Buttons */}
@@ -63,7 +77,7 @@ export default function HistoricalChart({ data, symbol }: Props) {
       {/* Chart Container */}
       <div className="w-full h-72 mt-2">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={filteredData}>
+          <AreaChart data={data}>
             <YAxis
               width={35}
               tickLine={false}

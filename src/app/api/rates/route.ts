@@ -1,24 +1,25 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { getExchangeProvider } from "@/lib/exchangeProviders";
-import { NextApiRequest } from "next";
+import config from "@/lib/config";
 
 export const revalidate = 300; // Cache for 5 minutes
 
-const TARGET_CURRENCIES = ["AUD", "EUR", "JPY", "SGD", "GBP"];
-
-export async function GET(request: NextApiRequest) {
-  const base = (request.query?.base || "AUD") as string;
+export async function GET(request: NextRequest) {
+  const base = (request.nextUrl.searchParams.get("base") ||
+    config.defaultBaseCurrency) as string;
 
   const provider = getExchangeProvider();
 
   try {
-    const data = await provider.getLatestRates(base, TARGET_CURRENCIES);
+    const data = await provider.getLatestRates(
+      base,
+      config.availableCurrencies
+    );
 
     return NextResponse.json({
       base: data.base,
       rates: data.rates,
       updatedAt: data.updatedAt,
-      stale: false,
     });
   } catch (error) {
     console.error("Failed to fetch latest rates:", error);

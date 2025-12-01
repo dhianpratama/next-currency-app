@@ -4,11 +4,16 @@ export interface ExchangeRateData {
   updatedAt: number;
 }
 
+export interface HistoricalRate {
+  date: string;
+  rate: number;
+}
+
 export interface IExchangeProvider {
   getLatestRates(base: string, symbols: string[]): Promise<ExchangeRateData>;
   getHistoricalRates(
     base: string,
     symbol: string,
     days: number
-  ): Promise<{ date: string; rate: number }[]>;
+  ): Promise<HistoricalRate[]>;
 }

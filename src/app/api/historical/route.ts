@@ -1,36 +1,35 @@
-import { NextResponse } from "next/server";
-import { getExchangeProvider } from "@/lib/exchangeProviders";
+import { NextResponse, type NextRequest } from "next/server";
 
-import type { NextApiRequest } from "next";
+import { getExchangeProvider } from "@/lib/exchangeProviders";
 import config from "@/lib/config";
 
 export const revalidate = 3600;
 // Cache for 1 hour — historical data doesn't change frequently
 
-export async function GET(request: NextApiRequest) {
+export async function GET(request: NextRequest) {
+  const base =
+    request.nextUrl.searchParams.get("base") || config.defaultBaseCurrency;
+  const currency = request.nextUrl.searchParams.get("currency") || "";
+  const days = parseInt(request.nextUrl.searchParams.get("days") || "14", 10);
+
   const provider = getExchangeProvider();
 
-  const base = (request.query?.base as string) || config.defaultBaseCurrency;
-  const symbol = (request.query?.symbol as string) || "";
-  const days = parseInt((request.query?.days as string) || "14", 10);
-
-  if (!base || !symbol) {
+  if (!base || !currency) {
     return NextResponse.json(
-      { error: "Missing 'base' or 'symbol' query parameter" },
+      { error: "Missing 'base' or 'currency' query parameter" },
       { status: 400 }
     );
   }
 
   try {
-    const history = await provider.getHistoricalRates(base, symbol, days);
+    const history = await provider.getHistoricalRates(base, currency, days);
 
     return NextResponse.json({
       base,
-      symbol,
+      currency,
       days,
       history,
       updatedAt: Date.now(),
-      stale: false,
     });
   } catch (error) {
     console.error("Failed to fetch historical data:", error);

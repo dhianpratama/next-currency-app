@@ -36,7 +36,7 @@ export const OpenExchangeProvider: IExchangeProvider = {
         const iso = date.toISOString().split("T")[0];
 
         const url = `${API_BASE}/historical/${iso}.json?app_id=${API_KEY}&base=${base}&symbols=${symbol}`;
-        const res = await fetch(url);
+        const res = await fetch(url, { next: { revalidate: 3600 * 24 } });
         const data = await res.json();
 
         return {

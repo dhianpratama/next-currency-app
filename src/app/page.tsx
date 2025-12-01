@@ -1,24 +1,36 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+
 import CurrencyList from "@/components/CurrencyList";
 import CurrencySelector from "@/components/CurrencySelector";
 
-import { useRouter } from "next/navigation";
+import { ExchangeRateData } from "@/lib/exchangeProviders/types";
+
 import config from "@/lib/config";
 
 export default function HomePage() {
   const [amount, setAmount] = useState(100);
-  const [rates, setRates] = useState<Record<string, number>>({});
   const [baseCurrency, setBaseCurrency] = useState(config.defaultBaseCurrency);
+
+  console.log("baseCurrency ", baseCurrency);
 
   const router = useRouter();
 
-  useEffect(() => {
-    fetch("/api/rates")
-      .then((res) => res.json())
-      .then((data) => setRates(data.rates));
-  }, []);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["rates", baseCurrency],
+    queryFn: async () => {
+      const res = await fetch(`/api/rates?base=${baseCurrency}`);
+      return res.json() as Promise<ExchangeRateData>;
+    },
+    placeholderData: (previousData) => previousData,
+    refetchInterval: 60000,
+    refetchOnWindowFocus: true,
+  });
+
+  console.log("data ", data);
 
   return (
     <main className="max-w-md mx-auto px-6 py-10">
@@ -49,12 +61,29 @@ export default function HomePage() {
         </div>
       </div>
 
-      <CurrencyList
-        rates={rates}
-        baseAmount={amount}
-        baseCurrency={baseCurrency}
-        onSelectCurrency={(currency) => router.push(`/chart/${currency}`)}
-      />
+      {isError ? (
+        <p className="text-red-500">Failed to load data.</p>
+      ) : isLoading && !data ? (
+        <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+      ) : data ? (
+        <>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Last currency update: {new Date(data.updatedAt).toLocaleString()}
+          </p>
+
+          <CurrencyList
+            rates={data.rates}
+            baseAmount={amount}
+            baseCurrency={baseCurrency}
+            isLoading={isLoading}
+            onSelectCurrency={(currency) =>
+              router.push(`/chart/${currency}?base=${baseCurrency}`)
+            }
+          />
+        </>
+      ) : (
+        <></>
+      )}
     </main>
   );
 }

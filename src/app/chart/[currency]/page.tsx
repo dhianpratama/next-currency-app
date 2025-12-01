@@ -13,17 +13,8 @@ export default function ChartPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { currency } = React.use(params);
-  const { base = config.defaultBaseCurrency } = React.use(searchParams);
-
-  const [historyData, setHistoryData] = useState<
-    { date: string; rate: number }[]
-  >([]);
-
-  useEffect(() => {
-    fetch(`/api/historical?base=${base}&currency=${currency}`)
-      .then((res) => res.json())
-      .then((data) => setHistoryData(data.history));
-  }, [currency, base]);
+  const { base = config.defaultBaseCurrency as string } =
+    React.use(searchParams);
 
   return (
     <main className="max-w-md mx-auto px-6 py-6">
@@ -34,7 +25,7 @@ export default function ChartPage({
         ← Back
       </Link>
 
-      <HistoricalChart data={historyData} symbol={currency} />
+      <HistoricalChart currency={currency} base={base as string} />
     </main>
   );
 }
