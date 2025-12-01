@@ -64,7 +64,6 @@ export default function HistoricalChart({ data, symbol }: Props) {
       <div className="w-full h-72 mt-2">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={filteredData}>
-            {/* Fix left space - Y axis narrow size */}
             <YAxis
               width={35}
               tickLine={false}
@@ -93,7 +92,6 @@ export default function HistoricalChart({ data, symbol }: Props) {
               labelStyle={{ color: "#fff" }}
             />
 
-            {/* Gradient fill */}
             <defs>
               <linearGradient id="colorFx" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="10%" stopColor="#80fbb7" stopOpacity={0.3} />
@@ -101,7 +99,6 @@ export default function HistoricalChart({ data, symbol }: Props) {
               </linearGradient>
             </defs>
 
-            {/* Area */}
             <Area
               type="monotone"
               dataKey="rate"
@@ -111,7 +108,6 @@ export default function HistoricalChart({ data, symbol }: Props) {
               animationBegin={200}
             />
 
-            {/* Line */}
             <Line
               type="monotone"
               dataKey="rate"

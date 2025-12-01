@@ -4,13 +4,15 @@ import CurrencyRow from "./CurrencyRow";
 
 interface Props {
   rates: Record<string, number>;
-  amountAUD: number;
+  baseCurrency: string;
+  baseAmount: number;
   onSelectCurrency: (currency: string) => void;
 }
 
 export default function CurrencyList({
   rates,
-  amountAUD,
+  baseAmount,
+  baseCurrency,
   onSelectCurrency,
 }: Props) {
   return (
@@ -20,7 +22,8 @@ export default function CurrencyList({
           key={currency}
           currency={currency}
           rate={rate}
-          amountAUD={amountAUD}
+          baseCurrency={baseCurrency}
+          baseAmount={baseAmount}
           onClick={() => onSelectCurrency(currency)}
         />
       ))}

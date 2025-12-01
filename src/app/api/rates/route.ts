@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server";
 import { getExchangeProvider } from "@/lib/exchangeProviders";
+import { NextApiRequest } from "next";
 
 export const revalidate = 300; // Cache for 5 minutes
 
 const TARGET_CURRENCIES = ["AUD", "EUR", "JPY", "SGD", "GBP"];
 
-export async function GET() {
+export async function GET(request: NextApiRequest) {
+  const base = (request.query?.base || "AUD") as string;
+
   const provider = getExchangeProvider();
 
   try {
-    const data = await provider.getLatestRates("USD", TARGET_CURRENCIES);
+    const data = await provider.getLatestRates(base, TARGET_CURRENCIES);
 
     return NextResponse.json({
       base: data.base,

@@ -2,11 +2,10 @@ import {
   IExchangeProvider,
   ExchangeRateData,
 } from "@/lib/exchangeProviders/types";
+import config from "@/lib/config";
 
 const API_BASE = "https://openexchangerates.org/api";
-const API_KEY = process.env.OPEN_EXCHANGE_API_KEY;
-
-console.log("Using OpenExchange API Key:", API_KEY);
+const API_KEY = config.openExchangeApiKey;
 
 export const OpenExchangeProvider: IExchangeProvider = {
   async getLatestRates(
@@ -30,22 +29,22 @@ export const OpenExchangeProvider: IExchangeProvider = {
   },
 
   async getHistoricalRates(base, symbol, days) {
-    const results: { date: string; rate: number }[] = [];
+    const results = await Promise.all(
+      Array.from({ length: days }).map(async (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const iso = date.toISOString().split("T")[0];
 
-    for (let i = 0; i < days; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const iso = date.toISOString().split("T")[0];
+        const url = `${API_BASE}/historical/${iso}.json?app_id=${API_KEY}&base=${base}&symbols=${symbol}`;
+        const res = await fetch(url);
+        const data = await res.json();
 
-      const url = `${API_BASE}/historical/${iso}.json?app_id=${API_KEY}&base=${base}&symbols=${symbol}`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      results.push({
-        date: iso,
-        rate: data.rates[symbol],
-      });
-    }
+        return {
+          date: iso,
+          rate: data.rates[symbol],
+        };
+      })
+    );
 
     return results.reverse();
   },

@@ -1,43 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CurrencyTable from "@/components/CurrencyTable";
-import Modal from "@/components/Modal";
-import HistoricalChart from "@/components/HistoricalChart";
 import CurrencyList from "@/components/CurrencyList";
 import CurrencySelector from "@/components/CurrencySelector";
 
 import { useRouter } from "next/navigation";
+import config from "@/lib/config";
 
 export default function HomePage() {
-  const [amountAUD, setAmountAUD] = useState(100);
+  const [amount, setAmount] = useState(100);
   const [rates, setRates] = useState<Record<string, number>>({});
-  const [selectedCurrency, setSelectedCurrency] = useState<string | null>(null);
-  const [historyData, setHistoryData] = useState<
-    { date: string; rate: number }[]
-  >([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [baseCurrency, setBaseCurrency] = useState("AUD");
+  const [baseCurrency, setBaseCurrency] = useState(config.defaultBaseCurrency);
 
   const router = useRouter();
-
-  console.log("baseCurrency", baseCurrency);
 
   useEffect(() => {
     fetch("/api/rates")
       .then((res) => res.json())
       .then((data) => setRates(data.rates));
   }, []);
-
-  const openCurrencyModal = async (currency: string) => {
-    setSelectedCurrency(currency);
-    setModalOpen(true);
-
-    const res = await fetch(`/api/historical?symbol=${currency}`);
-    const json = await res.json();
-
-    setHistoryData(json.history);
-  };
 
   return (
     <main className="max-w-md mx-auto px-6 py-10">
@@ -57,8 +38,8 @@ export default function HomePage() {
           <CurrencySelector value={baseCurrency} onChange={setBaseCurrency} />
           <input
             type="number"
-            value={amountAUD}
-            onChange={(e) => setAmountAUD(Number(e.target.value))}
+            value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))}
             className="
               text-right text-xl font-semibold 
               text-gray-900 dark:text-gray-100 
@@ -70,15 +51,10 @@ export default function HomePage() {
 
       <CurrencyList
         rates={rates}
-        amountAUD={amountAUD}
+        baseAmount={amount}
+        baseCurrency={baseCurrency}
         onSelectCurrency={(currency) => router.push(`/chart/${currency}`)}
       />
-
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        {selectedCurrency && (
-          <HistoricalChart data={historyData} symbol={selectedCurrency} />
-        )}
-      </Modal>
     </main>
   );
 }

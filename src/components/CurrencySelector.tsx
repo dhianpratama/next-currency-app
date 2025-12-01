@@ -1,17 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-
-const FLAG_MAP: Record<string, string> = {
-  AUD: "🇦🇺",
-  USD: "🇺🇸",
-  EUR: "🇪🇺",
-  GBP: "🇬🇧",
-  CAD: "🇨🇦",
-  NZD: "🇳🇿",
-  SGD: "🇸🇬",
-  JPY: "🇯🇵",
-};
+import config from "@/lib/config";
+import { FLAG_MAP } from "@/lib/utils";
 
 interface Props {
   value: string;
@@ -22,9 +13,8 @@ export default function CurrencySelector({ value, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const currencies = ["AUD", "USD", "EUR", "GBP", "CAD", "NZD"];
+  const currencies = config.availableCurrencies;
 
-  // Close when clicking outside
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -85,14 +75,9 @@ export default function CurrencySelector({ value, onChange }: Props) {
                 onChange(cur);
                 setOpen(false);
               }}
-              className="
-               flex items-center gap-3 w-full px-4 py-2
-  text-left 
-  hover:bg-gray-100 dark:hover:bg-gray-700
-              "
+              className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <span className="text-xl">{FLAG_MAP[cur]}</span>
-
               <span className="font-medium text-gray-900 dark:text-gray-100">
                 {cur}
               </span>

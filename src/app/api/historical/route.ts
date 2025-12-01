@@ -1,20 +1,22 @@
 import { NextResponse } from "next/server";
 import { getExchangeProvider } from "@/lib/exchangeProviders";
 
+import type { NextApiRequest } from "next";
+import config from "@/lib/config";
+
 export const revalidate = 3600;
 // Cache for 1 hour — historical data doesn't change frequently
 
-export async function GET(request: Request) {
+export async function GET(request: NextApiRequest) {
   const provider = getExchangeProvider();
-  const { searchParams } = new URL(request.url);
 
-  const base = "USD";
-  const symbol = searchParams.get("symbol");
-  const days = parseInt(searchParams.get("days") || "14", 10);
+  const base = (request.query?.base as string) || config.defaultBaseCurrency;
+  const symbol = (request.query?.symbol as string) || "";
+  const days = parseInt((request.query?.days as string) || "14", 10);
 
-  if (!symbol) {
+  if (!base || !symbol) {
     return NextResponse.json(
-      { error: "Missing 'symbol' query parameter" },
+      { error: "Missing 'base' or 'symbol' query parameter" },
       { status: 400 }
     );
   }

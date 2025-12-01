@@ -1,30 +1,23 @@
 "use client";
 
-const FLAG_MAP: Record<string, string> = {
-  USD: "🇺🇸",
-  EUR: "🇪🇺",
-  GBP: "🇬🇧",
-  CAD: "🇨🇦",
-  NZD: "🇳🇿",
-  SGD: "🇸🇬",
-  JPY: "🇯🇵",
-  AUD: "🇦🇺",
-};
+import { FLAG_MAP } from "@/lib/utils";
 
 interface Props {
   currency: string;
   rate: number;
-  amountAUD: number;
+  baseCurrency: string;
+  baseAmount: number;
   onClick: () => void;
 }
 
 export default function CurrencyRow({
   currency,
   rate,
-  amountAUD,
+  baseCurrency,
+  baseAmount,
   onClick,
 }: Props) {
-  const converted = amountAUD * rate;
+  const converted = baseAmount * rate;
 
   return (
     <div
@@ -48,7 +41,7 @@ export default function CurrencyRow({
       </div>
 
       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-        1 AUD = {rate.toFixed(4)} {currency}
+        1 {baseCurrency} = {rate.toFixed(4)} {currency}
       </p>
     </div>
   );

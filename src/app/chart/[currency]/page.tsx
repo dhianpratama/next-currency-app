@@ -3,26 +3,30 @@
 import React, { useEffect, useState } from "react";
 import HistoricalChart from "@/components/HistoricalChart";
 import Link from "next/link";
+import config from "@/lib/config";
 
 export default function ChartPage({
   params,
+  searchParams,
 }: {
-  params: Promise<{ symbol: string }>;
+  params: Promise<{ currency: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { symbol } = React.use(params);
+  const { currency } = React.use(params);
+  const { base = config.defaultBaseCurrency } = React.use(searchParams);
+
   const [historyData, setHistoryData] = useState<
     { date: string; rate: number }[]
   >([]);
 
   useEffect(() => {
-    fetch(`/api/historical?symbol=${symbol}`)
+    fetch(`/api/historical?base=${base}&currency=${currency}`)
       .then((res) => res.json())
       .then((data) => setHistoryData(data.history));
-  }, [symbol]);
+  }, [currency, base]);
 
   return (
     <main className="max-w-md mx-auto px-6 py-6">
-      {/* Back button */}
       <Link
         href="/"
         className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium mb-4"
@@ -30,7 +34,7 @@ export default function ChartPage({
         ← Back
       </Link>
 
-      <HistoricalChart data={historyData} symbol={symbol} />
+      <HistoricalChart data={historyData} symbol={currency} />
     </main>
   );
 }
