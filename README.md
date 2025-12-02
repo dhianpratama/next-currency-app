@@ -1,6 +1,8 @@
 # Next.js Currency Converter
 
-This project is designed to demonstrate clean architecture, great UI/UX, strong engineering practices, and production-ready code organization.
+This project is designed to demonstrate clean architecture, great UI/UX, strong engineering practices, and production-ready code.
+
+Demo app can be tested here: https://next-currency-app.vercel.app/
 
 ---
 
