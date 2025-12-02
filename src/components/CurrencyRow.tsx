@@ -1,6 +1,7 @@
 "use client";
 
 import { FLAG_MAP } from "@/lib/utils";
+import Image from "next/image";
 
 interface Props {
   currency: string;
@@ -30,7 +31,13 @@ export default function CurrencyRow({
       {/* TOP ROW */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-3xl">{FLAG_MAP[currency]}</span>
+          <Image
+            src={FLAG_MAP[currency]}
+            alt={`${currency} flag`}
+            className="w-8 h-6 rounded-sm object-cover"
+            width={24}
+            height={18}
+          />
           <span className="text-lg font-semibold">{currency}</span>
         </div>
 
