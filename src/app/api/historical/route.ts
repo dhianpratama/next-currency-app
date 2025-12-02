@@ -3,8 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getExchangeProvider } from "@/lib/exchangeProviders";
 import config from "@/lib/config";
 
-export const revalidate = 3600;
-// Cache for 1 hour — historical data doesn't change frequently
+export const revalidate = 3600; // Cache for 1 hour, as historical data changes less frequently
 
 export async function GET(request: NextRequest) {
   const base =

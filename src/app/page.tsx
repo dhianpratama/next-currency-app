@@ -15,8 +15,6 @@ export default function HomePage() {
   const [amount, setAmount] = useState(100);
   const [baseCurrency, setBaseCurrency] = useState(config.defaultBaseCurrency);
 
-  console.log("baseCurrency ", baseCurrency);
-
   const router = useRouter();
 
   const { data, isLoading, isError } = useQuery({
