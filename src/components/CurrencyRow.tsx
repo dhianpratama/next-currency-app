@@ -1,7 +1,6 @@
 "use client";
 
-import { FLAG_MAP } from "@/lib/utils";
-import Image from "next/image";
+import Flag from "./Flag";
 
 interface Props {
   currency: string;
@@ -31,13 +30,7 @@ export default function CurrencyRow({
       {/* TOP ROW */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Image
-            src={FLAG_MAP[currency]}
-            alt={`${currency} flag`}
-            className="w-8 h-6 rounded-sm object-cover"
-            width={24}
-            height={18}
-          />
+          <Flag code={currency} />
           <span className="text-lg font-semibold">{currency}</span>
         </div>
 
@@ -49,7 +42,7 @@ export default function CurrencyRow({
         </span>
       </div>
 
-      <p className="animate-pulse text-sm text-gray-500 dark:text-gray-400 mt-1">
+      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
         1 {baseCurrency} = {rate.toFixed(4)} {currency}
       </p>
     </div>

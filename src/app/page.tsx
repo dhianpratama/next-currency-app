@@ -30,8 +30,6 @@ export default function HomePage() {
     refetchOnWindowFocus: true,
   });
 
-  console.log("data ", data);
-
   return (
     <main className="max-w-md mx-auto px-6 py-10">
       <h1 className="text-center text-2xl font-semibold mb-6">Convert</h1>

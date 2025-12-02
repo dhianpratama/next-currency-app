@@ -12,7 +12,7 @@ import {
 import { useState, useMemo } from "react";
 import config from "@/lib/config";
 import { useQuery } from "@tanstack/react-query";
-import { HistoricalRate } from "@/lib/exchangeProviders/types";
+import { ExchangeRatesResponse } from "@/lib/exchangeProviders/types";
 
 interface Props {
   currency: string;
@@ -36,16 +36,14 @@ export default function HistoricalChart({ currency, base }: Props) {
     queryKey: ["historical", currency, base, days],
     queryFn: async () => {
       const res = await fetch(
-        `/api/historical?base=${base}&currency=${currency}`
+        `/api/historical?base=${base}&currency=${currency}&days=${days}`
       );
-      return res.json() as Promise<HistoricalRate[]>;
+      return res.json() as Promise<ExchangeRatesResponse>;
     },
     placeholderData: (previousData) => previousData,
-    refetchInterval: 60000,
     refetchOnWindowFocus: true,
   });
 
-  console.log("data ", data);
   return (
     <div className="w-full pt-2">
       {/* Title */}
@@ -73,67 +71,77 @@ export default function HistoricalChart({ currency, base }: Props) {
           </button>
         ))}
       </div>
+      {isLoading && (
+        <p className="text-gray-500 dark:text-gray-400">
+          Loading chart data...
+        </p>
+      )}
 
-      {/* Chart Container */}
-      <div className="w-full h-72 mt-2">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
-            <YAxis
-              width={35}
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: "currentColor", fontSize: 12 }}
-              domain={[
-                (dataMin: number) => dataMin * 0.98,
-                (dataMax: number) => dataMax * 1.02,
-              ]}
-            />
+      {!isLoading && isError && (
+        <p className="text-red-500">Failed to load chart data.</p>
+      )}
 
-            <XAxis
-              dataKey="date"
-              tick={{ fill: "currentColor", fontSize: 12 }}
-              tickLine={false}
-              axisLine={false}
-              minTickGap={20}
-            />
+      {!isLoading && !isError && data && (
+        <div className="w-full h-72 mt-2">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data?.history}>
+              <YAxis
+                width={35}
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: "currentColor", fontSize: 12 }}
+                domain={[
+                  (dataMin: number) => dataMin * 0.98,
+                  (dataMax: number) => dataMax * 1.02,
+                ]}
+              />
 
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "rgba(20,20,20,0.85)",
-                borderRadius: "8px",
-                border: "1px solid rgba(255,255,255,0.15)",
-              }}
-              labelStyle={{ color: "#fff" }}
-            />
+              <XAxis
+                dataKey="date"
+                tick={{ fill: "currentColor", fontSize: 12 }}
+                tickLine={false}
+                axisLine={false}
+                minTickGap={20}
+              />
 
-            <defs>
-              <linearGradient id="colorFx" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="10%" stopColor="#80fbb7" stopOpacity={0.3} />
-                <stop offset="90%" stopColor="#80fbb7" stopOpacity={0} />
-              </linearGradient>
-            </defs>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgba(20,20,20,0.85)",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                }}
+                labelStyle={{ color: "#fff" }}
+              />
 
-            <Area
-              type="monotone"
-              dataKey="rate"
-              fill="url(#colorFx)"
-              stroke="none"
-              animationDuration={1000}
-              animationBegin={200}
-            />
+              <defs>
+                <linearGradient id="colorFx" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="10%" stopColor="#80fbb7" stopOpacity={0.3} />
+                  <stop offset="90%" stopColor="#80fbb7" stopOpacity={0} />
+                </linearGradient>
+              </defs>
 
-            <Line
-              type="monotone"
-              dataKey="rate"
-              stroke="#80fbb7"
-              strokeWidth={2.5}
-              dot={false}
-              activeDot={{ r: 6, fill: "#80fbb7" }}
-              animationDuration={800}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+              <Area
+                type="monotone"
+                dataKey="rate"
+                fill="url(#colorFx)"
+                stroke="none"
+                animationDuration={1000}
+                animationBegin={200}
+              />
+
+              <Line
+                type="monotone"
+                dataKey="rate"
+                stroke="#80fbb7"
+                strokeWidth={2.5}
+                dot={false}
+                activeDot={{ r: 6, fill: "#80fbb7" }}
+                animationDuration={800}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }

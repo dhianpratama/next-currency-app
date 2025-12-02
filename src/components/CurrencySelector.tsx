@@ -2,8 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import config from "@/lib/config";
-import { FLAG_MAP } from "@/lib/utils";
-import Image from "next/image";
+import Flag from "./Flag";
 
 interface Props {
   value: string;
@@ -14,7 +13,7 @@ export default function CurrencySelector({ value, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const currencies = config.availableCurrencies;
+  const currencies = config.availableCurrencies?.sort();
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -40,13 +39,7 @@ export default function CurrencySelector({ value, onChange }: Props) {
             active:scale-[0.98] transition
         "
       >
-        <Image
-          src={FLAG_MAP[value]}
-          alt={`${value} flag`}
-          className="w-8 h-6 rounded-sm object-cover"
-          width={24}
-          height={18}
-        />
+        <Flag code={value} />
         <span className="font-semibold">{value}</span>
         <svg
           width="18"
@@ -84,13 +77,7 @@ export default function CurrencySelector({ value, onChange }: Props) {
               }}
               className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <Image
-                src={FLAG_MAP[cur]}
-                alt={`${cur} flag`}
-                className="w-8 h-6 rounded-sm object-cover"
-                width={24}
-                height={18}
-              />
+              <Flag code={cur} />
               <span className="font-medium text-gray-900 dark:text-gray-100">
                 {cur}
               </span>

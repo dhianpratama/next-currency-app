@@ -7,4 +7,8 @@ export const FLAG_MAP: Record<string, string> = {
   SGD: "https://flagcdn.com/24x18/sg.png",
   JPY: "https://flagcdn.com/24x18/jp.png",
   AUD: "https://flagcdn.com/24x18/au.png",
+  INR: "https://flagcdn.com/24x18/in.png",
+  IDR: "https://flagcdn.com/24x18/id.png",
+  CNY: "https://flagcdn.com/24x18/cn.png",
+  CHF: "https://flagcdn.com/24x18/ch.png",
 };
