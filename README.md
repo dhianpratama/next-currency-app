@@ -4,6 +4,12 @@ This project is designed to demonstrate clean architecture, great UI/UX, strong 
 
 Demo app can be tested here: https://next-currency-app.vercel.app/
 
+<!-- ![home](./screenshots/home.png)
+![home](./screenshots/chart.png) -->
+
+<img src="screenshots/home.png" width="200"/>
+<img src="screenshots/chart.png" width="200"/>
+
 ---
 
 # Features
